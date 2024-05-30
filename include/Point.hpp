@@ -1,40 +1,35 @@
+#pragma once
+
+#include <cstddef>
+
 class Point{
     private:
-        size_t dim = 0;
-        double* coords = nullptr;
+        std::size_t dim = 0;
+        double *coords = nullptr;
 
-        void reset_coords(size_t dim){
-            if(!this->coords) delete[] this->coords;
-            this->dim = dim;
-            if (dim) this->coords = new double[dim];
-            else this->coords = nullptr;
-        }
     public:
 
         /*
          * Constructors
          */
-        Point(int dim, double* coords){
+        Point(size_t dim, double *coords){
             this->dim = dim;
             this->coords = new double[dim];
-            for(size_t i = 0; i < dim; i++){
-                this->coords[i] = coords[i];
-            }
-        }
-
-        Point(double *coords){
-            this->dim = sizeof(coords)/sizeof(coords[0]);
-            this->coords = new double[dim];
-            for(size_t i = 0; i < dim; i++){
+            for(std::size_t i = 0; i < dim; i++){
                 this->coords[i] = coords[i];
             }
         }
 
         Point(Point const &p){
             this->dim = p.dim;
-            for(size_t i = 0; i < dim; i++){
+            for(std::size_t i = 0; i < dim; i++){
                 this->coords[i] = p.coords[i];
             }
+        }
+
+        Point(){
+            this->dim = 0;
+            this->coords = nullptr;
         }
 
         Point& operator=(const Point& p){
@@ -44,7 +39,7 @@ class Point{
             delete[] this->coords;
             this->dim = p.dim;
             this->coords = new double[dim];
-            for(size_t i = 0; i < dim; i++){
+            for(std::size_t i = 0; i < dim; i++){
                 this->coords[i] = p.coords[i];
             }
             return *this;
@@ -79,19 +74,31 @@ class Point{
          * Operator Overloading
          */
         
-        double operator[](size_t i) const{
+        double operator[](std::size_t i) const{
             return this->coords[i];
         }
 
-        double& operator[](size_t i){
+        double& operator[](std::size_t i){
             return this->coords[i];
+        }
+
+        bool operator==(const Point &p) const{
+            if(this->dim != p.dim){
+                return false;
+            }
+            for(std::size_t i = 0; i < this->dim; i++){
+                if(this->coords[i] != p.coords[i]){
+                    return false;
+                }
+            }
+            return true;
         }
 
         /*
          * Getters
          */
 
-        size_t get_dim() const{
+        std::size_t get_dim() const{
             return this->dim;
         }
 

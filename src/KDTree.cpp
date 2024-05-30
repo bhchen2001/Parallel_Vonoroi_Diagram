@@ -1,4 +1,4 @@
-#include <KDTree.hpp>
+#include "include.hpp"
 
 KDNode* KDTree::build_kd_tree(std::vector<Point> &points, size_t depth){
     if(points.size() == 0){
@@ -13,8 +13,10 @@ KDNode* KDTree::build_kd_tree(std::vector<Point> &points, size_t depth){
     });
 
     KDNode *node = new KDNode(points[median]);
-    node->left = build_kd_tree(std::vector<Point>(points.begin(), points.begin() + median), depth + 1);
-    node->right = build_kd_tree(std::vector<Point>(points.begin() + median + 1, points.end()), depth + 1);
+    std::vector<Point> left_points(points.begin(), points.begin() + median);
+    std::vector<Point> right_points(points.begin() + median + 1, points.end());
+    node->set_left(build_kd_tree(left_points, depth + 1));
+    node->set_right(build_kd_tree(right_points, depth + 1));
 
     return node;
 }
@@ -26,19 +28,20 @@ void KDTree::insert_node(Point point){
     while(true){
         size_t axis = depth % dimensions;
 
-        if(point[axis] < current->point[axis]){
-            if(current->left == nullptr){
-                current->left = new KDNode(point);
+        if(point[axis] < current->get_point()[axis]){
+            if(current->get_left() == nullptr){
+                current->set_left(new KDNode(point));
                 break;
             }else{
-                current = current->left;
+                current = current->get_left();
             }
-        }else{
-            if(current->right == nullptr){
-                current->right = new KDNode(point);
+        }
+        else{
+            if(current->get_right() == nullptr){
+                current->set_right(new KDNode(point));
                 break;
             }else{
-                current = current->right;
+                current = current->get_right();
             }
         }
 
@@ -54,51 +57,47 @@ void KDTree::delete_node(Point point){
     while(current != nullptr){
         size_t axis = depth % dimensions;
 
-        if(current->point == point){
-            if(current->right != nullptr){
-                KDNode *min = current->right;
-                KDNode *min_parent = current;
-
-                while(min->left != nullptr){
-                    min_parent = min;
-                    min = min->left;
-                }
-
-                current->point = min->point;
-                current = min;
-                parent = min_parent;
-            }else if(current->left != nullptr){
-                KDNode *max = current->left;
-                KDNode *max_parent = current;
-
-                while(max->right != nullptr){
-                    max_parent = max;
-                    max = max->right;
-                }
-
-                current->point = max->point;
-                current = max;
-                parent = max_parent;
-            }else{
+        if(current->get_point() == point){
+            if(current->get_left() == nullptr && current->get_right() == nullptr){
                 if(parent == nullptr){
                     root = nullptr;
                 }else{
-                    if(parent->left == current){
-                        parent->left = nullptr;
+                    if(parent->get_left() == current){
+                        parent->set_left(nullptr);
                     }else{
-                        parent->right = nullptr;
+                        parent->set_right(nullptr);
                     }
                 }
-
                 delete current;
                 break;
             }
-        }else if(point[axis] < current->point[axis]){
-            parent = current;
-            current = current->left;
-        }else{
-            parent = current;
-            current = current->right;
+            else{
+                KDNode *successor = current->get_right();
+                KDNode *successor_parent = current;
+
+                while(successor->get_left() != nullptr){
+                    successor_parent = successor;
+                    successor = successor->get_left();
+                }
+
+                current->set_point(successor->get_point());
+                if(successor_parent->get_left() == successor){
+                    successor_parent->set_left(successor->get_right());
+                }
+                else{
+                    successor_parent->set_right(successor->get_right());
+                }
+                delete successor;
+                break;
+            }
+        }
+
+        parent = current;
+        if(point[axis] < current->get_point()[axis]){
+            current = current->get_left();
+        }
+        else{
+            current = current->get_right();
         }
 
         depth++;
