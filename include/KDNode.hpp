@@ -1,12 +1,13 @@
 #pragma once
 
 #include <Point.hpp>
+#include <memory>
 
 class KDNode{
     private:
         Point point;
-        KDNode* left = nullptr;
-        KDNode* right = nullptr;
+        std::shared_ptr<KDNode> left = nullptr;
+        std::shared_ptr<KDNode> right = nullptr;
         size_t axis = -1;
 
     public:
@@ -14,19 +15,19 @@ class KDNode{
          * Constructor
          */
 
-        KDNode(Point &point, size_t axis, KDNode* left, KDNode* right){
+        KDNode(Point const &point, size_t axis, std::shared_ptr<KDNode> left, std::shared_ptr<KDNode> right){
             this->point = point;
             this->axis = axis;
             this->left = left;
             this->right = right;
         }
 
-        KDNode(Point &point, size_t axis){
+        KDNode(Point const &point, size_t axis){
             this->point = point;
             this->axis = axis;
         }
 
-        KDNode(Point &point){
+        KDNode(Point const &point){
             this->point = point;
         }
 
@@ -53,20 +54,14 @@ class KDNode{
         }
 
         /*
-         * Destructor
-         */
-
-        ~KDNode(){
-            delete this->left;
-            delete this->right;
-        }
-
-        /*
          * Operator Overloading
          */
 
         bool operator==(const KDNode& node){
-            return this->point == node.point;
+            /*
+             * Check if the point and axis of both the nodes are same
+             */
+            return this->point == node.point && this->axis == node.axis;
         }
 
         /*
@@ -77,11 +72,11 @@ class KDNode{
             return this->point;
         }
 
-        KDNode* get_left(){
+        std::shared_ptr<KDNode> get_left(){
             return this->left;
         }
 
-        KDNode* get_right(){
+        std::shared_ptr<KDNode> get_right(){
             return this->right;
         }
 
@@ -93,15 +88,19 @@ class KDNode{
          * Setters
          */
 
-        void set_left(KDNode* left){
+        void set_left(std::shared_ptr<KDNode> left){
             this->left = left;
         }
 
-        void set_right(KDNode* right){
+        void set_right(std::shared_ptr<KDNode> right){
             this->right = right;
         }
 
         void set_point(Point point){
             this->point = point;
+        }
+
+        void set_axis(size_t axis){
+            this->axis = axis;
         }
 };
