@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
 class Point{
     private:
@@ -12,7 +13,7 @@ class Point{
         /*
          * Constructors
          */
-        Point(size_t dim, double *coords){
+        Point(size_t dim, std::vector<double> const &coords){
             this->dim = dim;
             this->coords = new double[dim];
             for(std::size_t i = 0; i < dim; i++){
@@ -22,6 +23,7 @@ class Point{
 
         Point(Point const &p){
             this->dim = p.dim;
+            this->coords = new double[dim];
             for(std::size_t i = 0; i < dim; i++){
                 this->coords[i] = p.coords[i];
             }
