@@ -1,4 +1,6 @@
-#include <include/Point.hpp>
+#pragma once
+
+#include <Point.hpp>
 
 class KDNode{
     private:
@@ -12,19 +14,19 @@ class KDNode{
          * Constructor
          */
 
-        KDNode(Point point, size_t axis, KDNode* left, KDNode* right){
+        KDNode(Point &point, size_t axis, KDNode* left, KDNode* right){
             this->point = point;
             this->axis = axis;
             this->left = left;
             this->right = right;
         }
 
-        KDNode(Point point, size_t axis){
+        KDNode(Point &point, size_t axis){
             this->point = point;
             this->axis = axis;
         }
 
-        KDNode(Point point){
+        KDNode(Point &point){
             this->point = point;
         }
 
@@ -39,7 +41,7 @@ class KDNode{
             this->right = node.right;
         }
 
-        KDNode& operator=(const KDNode& node){
+        KDNode& operator=(const KDNode &node){
             if(this == &node){
                 return *this;
             }
@@ -85,5 +87,21 @@ class KDNode{
 
         size_t get_axis(){
             return this->axis;
+        }
+
+        /*
+         * Setters
+         */
+
+        void set_left(KDNode* left){
+            this->left = left;
+        }
+
+        void set_right(KDNode* right){
+            this->right = right;
+        }
+
+        void set_point(Point point){
+            this->point = point;
         }
 };
