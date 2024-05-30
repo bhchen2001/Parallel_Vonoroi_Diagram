@@ -1,5 +1,5 @@
 CXX = g++
-CXX_FLAGS = -Wall -Wextra -Werror -O3 -fPIC -shared
+CXX_FLAGS = -std=c++11 -Wall -Wextra -Werror -O3 -fPIC -shared
 
 CXXX_INCS = -I$(INC_DIR) -I$(PYBIND_INC_FLAGS) $(PYTHON_LIB_FLAGS)
 
@@ -13,13 +13,19 @@ INC_DIR = ./include
 POINT_SRC = $(SRC_DIR)/Point.cpp
 POINT_TARGET = ./_point$(PYTHON_SUF)
 
-.PHONY: test test_point clean
+KDNODE_SRC = $(SRC_DIR)/KDNode.cpp
+KDNODE_TARGET = ./_kdnode$(PYTHON_SUF)
 
-test: $(POINT_TARGET)
+.PHONY: test clean
+
+test: $(POINT_TARGET) $(KDNODE_TARGET)
 	python3 -m pytest
 
 $(POINT_TARGET): $(POINT_SRC)
 	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
 
+$(KDNODE_TARGET): $(KDNODE_SRC)
+	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
+
 clean:
-	rm -f $(POINT_TARGET)
+	rm -f $(POINT_TARGET) $(KDNODE_TARGET)
