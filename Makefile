@@ -13,10 +13,10 @@ INC_DIR = ./include
 POINT_SRC = $(SRC_DIR)/Point.cpp
 POINT_TARGET = ./_point$(PYTHON_SUF)
 
-.PHONY: test_point clean
+.PHONY: test test_point clean
 
-test_point: $(POINT_TARGET)
-	python3 -m pytest -v
+test: $(POINT_TARGET)
+	python3 -m pytest
 
 $(POINT_TARGET): $(POINT_SRC)
 	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
