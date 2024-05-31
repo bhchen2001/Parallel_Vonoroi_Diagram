@@ -16,10 +16,13 @@ POINT_TARGET = ./_point$(PYTHON_SUF)
 KDNODE_SRC = $(SRC_DIR)/KDNode.cpp
 KDNODE_TARGET = ./_kdnode$(PYTHON_SUF)
 
+KDTREE_SRC = $(SRC_DIR)/KDTree.cpp
+KDTREE_TARGET = ./_kdtree$(PYTHON_SUF)
+
 .PHONY: test clean
 
-test: $(POINT_TARGET) $(KDNODE_TARGET)
-	python3 -m pytest
+test: $(POINT_TARGET) $(KDNODE_TARGET) $(KDTREE_TARGET)
+	python3 -m pytest -vv
 
 $(POINT_TARGET): $(POINT_SRC)
 	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
@@ -27,5 +30,8 @@ $(POINT_TARGET): $(POINT_SRC)
 $(KDNODE_TARGET): $(KDNODE_SRC)
 	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
 
+$(KDTREE_TARGET): $(KDTREE_SRC)
+	$(CXX) $(CXX_FLAGS) $(CXXX_INCS) -o $@ $<
+
 clean:
-	rm -f $(POINT_TARGET) $(KDNODE_TARGET)
+	rm -f $(POINT_TARGET) $(KDNODE_TARGET) $(KDTREE_TARGET)
