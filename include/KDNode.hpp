@@ -103,4 +103,12 @@ class KDNode{
         void set_axis(size_t axis){
             this->axis = axis;
         }
+
+        /*
+         * Operations
+         */
+
+        bool is_leaf(){
+            return this->left == nullptr && this->right == nullptr;
+        }
 };

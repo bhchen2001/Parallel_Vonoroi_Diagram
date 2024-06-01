@@ -11,5 +11,7 @@ PYBIND11_MODULE(_point, m) {
         .def(pybind11::init<>())
         .def("__getitem__", [](Point &p, size_t i) { return p[i]; })
         .def("__eq__", &Point::operator==)
-        .def_property_readonly("dim", &Point::get_dim);
+        .def_property_readonly("dim", &Point::get_dim)
+        .def_property_readonly("coords", &Point::get_coords);
+    m.def("point_distance", &point_distance);
 }

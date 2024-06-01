@@ -15,5 +15,6 @@ PYBIND11_MODULE(_kdnode, m) {
         .def_property("point", &KDNode::get_point, &KDNode::set_point)
         .def_property("left", &KDNode::get_left, &KDNode::set_left)
         .def_property("right", &KDNode::get_right, &KDNode::set_right)
-        .def_property("axis", &KDNode::get_axis, &KDNode::set_axis);
+        .def_property("axis", &KDNode::get_axis, &KDNode::set_axis)
+        .def_property_readonly("is_leaf", &KDNode::is_leaf);
 }
