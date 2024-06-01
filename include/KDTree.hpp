@@ -1,6 +1,8 @@
 # pragma once
 
-#include <KDNode.hpp>
+#include "BoundedPriorityQueue.hpp"
+#include "KDNode.hpp"
+
 #include <vector>
 #include <algorithm>
 
@@ -58,8 +60,16 @@ class KDTree{
         }
 
         /*
-         * Functionality of KDTree
+         * Tree Operations
          */
+        
         void insert_node(Point point);
         bool delete_node(Point point);
+
+        /*
+         * Search Operations
+         */
+
+        std::vector<Point> search_nearest_neighbors(Point point, size_t k);
+        void search_nearest_neighbors_recursive(Point point, std::shared_ptr<KDNode> current, BoundedPriorityQueue &bpq, size_t k);
 };

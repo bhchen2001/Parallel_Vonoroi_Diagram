@@ -117,11 +117,43 @@ bool KDTree::delete_node(Point point){
     return found;
 }
 
+std::vector<Point> KDTree::search_nearest_neighbors(Point point, size_t k){
+    BoundedPriorityQueue bpq(k);
+    search_nearest_neighbors_recursive(point, root, bpq, k);
+    return bpq.get_points();
+}
+
+void KDTree::search_nearest_neighbors_recursive(Point query_point, std::shared_ptr<KDNode> current, BoundedPriorityQueue &bpq, size_t k){
+    if(current == nullptr){
+        return;
+    }
+
+    size_t axis = current->get_axis();
+    double distance = point_distance(query_point, current->get_point());
+    double diff = fabs(query_point[axis] - current->get_point()[axis]);
+
+    bpq.push(distance, current->get_point());
+
+    if(query_point[axis] < current->get_point()[axis]){
+        search_nearest_neighbors_recursive(query_point, current->get_left(), bpq, k);
+        if(bpq.get_size() < k || diff < bpq.max_priority()){
+            search_nearest_neighbors_recursive(query_point, current->get_right(), bpq, k);
+        }
+    }
+    else{
+        search_nearest_neighbors_recursive(query_point, current->get_right(), bpq, k);
+        if(bpq.get_size() < k || diff < bpq.max_priority()){
+            search_nearest_neighbors_recursive(query_point, current->get_left(), bpq, k);
+        }
+    }
+}
+
 PYBIND11_MODULE(_kdtree, m) {
     pybind11::class_<KDTree>(m, "KDTree")
         .def(pybind11::init<std::vector<Point> &, size_t>())
         .def("insert_node", &KDTree::insert_node)
         .def("delete_node", &KDTree::delete_node)
+        .def("search_nearest_neighbors", &KDTree::search_nearest_neighbors)
         .def_property_readonly("size", &KDTree::get_size)
         .def_property_readonly("root", &KDTree::get_root)
         .def_property_readonly("dimensions", &KDTree::get_dimensions)
