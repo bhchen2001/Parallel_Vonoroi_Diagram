@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Point.hpp>
+#include "Point.hpp"
+#include "Rectangle.hpp"
 #include <memory>
 
 class KDNode{
@@ -9,17 +10,33 @@ class KDNode{
         std::shared_ptr<KDNode> left = nullptr;
         std::shared_ptr<KDNode> right = nullptr;
         size_t axis = -1;
+        Rectangle region;
 
     public:
         /*
          * Constructor
          */
 
+        KDNode(Point const &point, size_t axis, Rectangle region, std::shared_ptr<KDNode> left, std::shared_ptr<KDNode> right){
+            this->point = point;
+            this->axis = axis;
+            this->region = region;
+            this->left = left;
+            this->right = right;
+        }
+
         KDNode(Point const &point, size_t axis, std::shared_ptr<KDNode> left, std::shared_ptr<KDNode> right){
             this->point = point;
             this->axis = axis;
+            this->region = Rectangle();
             this->left = left;
             this->right = right;
+        }
+
+        KDNode(Point const &point, size_t axis, Rectangle region){
+            this->point = point;
+            this->axis = axis;
+            this->region = region;
         }
 
         KDNode(Point const &point, size_t axis){
@@ -84,6 +101,10 @@ class KDNode{
             return this->axis;
         }
 
+        Rectangle get_region(){
+            return this->region;
+        }
+
         /*
          * Setters
          */
@@ -96,12 +117,26 @@ class KDNode{
             this->right = right;
         }
 
+        void set_left(std::shared_ptr<KDNode> left, Rectangle region){
+            this->left = left;
+            this->left->set_region(region);
+        }
+
+        void set_right(std::shared_ptr<KDNode> right, Rectangle region){
+            this->right = right;
+            this->right->set_region(region);
+        }
+
         void set_point(Point point){
             this->point = point;
         }
 
         void set_axis(size_t axis){
             this->axis = axis;
+        }
+
+        void set_region(Rectangle region){
+            this->region = region;
         }
 
         /*
