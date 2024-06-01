@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <vector>
+#include <stdexcept>
+#include <cmath>
 
 class Point{
     private:
@@ -104,7 +106,29 @@ class Point{
             return this->dim;
         }
 
-        double* get_coords() const{
-            return this->coords;
+        std::vector<double> get_coords() const{
+            std::vector<double> coords;
+            for(std::size_t i = 0; i < this->dim; i++){
+                coords.push_back(this->coords[i]);
+            }
+            return coords;
         }
 };
+
+/*
+ * Distance between two points
+ */
+
+double point_distance(Point const &p1, Point const &p2){
+    if(p1.get_dim() != p2.get_dim()){
+        throw std::invalid_argument("Points must have the same dimension");
+    }
+
+    double sum = 0;
+
+    for(std::size_t i = 0; i < p1.get_dim(); i++){
+        sum += (p1[i] - p2[i]) * (p1[i] - p2[i]);
+    }
+
+    return sqrt(sum);
+}

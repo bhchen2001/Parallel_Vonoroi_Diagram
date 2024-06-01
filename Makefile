@@ -19,7 +19,9 @@ KDNODE_TARGET = ./_kdnode$(PYTHON_SUF)
 KDTREE_SRC = $(SRC_DIR)/KDTree.cpp
 KDTREE_TARGET = ./_kdtree$(PYTHON_SUF)
 
-.PHONY: test clean
+.PHONY: all test clean
+
+all: $(POINT_TARGET) $(KDNODE_TARGET) $(KDTREE_TARGET)
 
 test: $(POINT_TARGET) $(KDNODE_TARGET) $(KDTREE_TARGET)
 	python3 -m pytest -vv
