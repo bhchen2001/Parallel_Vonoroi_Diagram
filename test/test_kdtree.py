@@ -1,5 +1,9 @@
 import unittest
 import pytest
+import random
+from parameterized import parameterized
+
+from scipy.spatial import KDTree
 
 import sys
 sys.path.append('..')
@@ -14,6 +18,16 @@ class KDTreeTest(unittest.TestCase):
         points = []
         for i in range(num_nodes):
             points.append(_point.Point(dim, [i] * dim))
+
+        return points
+    
+    def set_random_points(self, num_nodes, dim):
+        """
+        Set and return the list of random points
+        """
+        points = []
+        for i in range(num_nodes):
+            points.append(_point.Point(dim, [random.random() for _ in range(dim)]))
 
         return points
     
@@ -32,29 +46,29 @@ class KDTreeTest(unittest.TestCase):
         self.traverse(node.left, (axis + 1) % dim, dim, points)
         self.traverse(node.right, (axis + 1) % dim, dim, points)
     
-    def test_build_tree_three_nodes(self):
+    def test_build_tree_high_dim(self):
         """
-        Build the tree with three nodes
-            - [0, 0], [1, 1], [2, 2]
-        Test the following info
-            - tree's dimensions
-            - tree's size
-            - each nodes' point and dimension
+        Build the tree with five points
+            - [0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]
         """
-        num_nodes = 3
-        dim = 2
+        num_nodes = 5
+        dim = 3
         points = self.set_points(num_nodes, dim)
         tree = _kdtree.KDTree(points, dim)
 
         self.assertEqual(tree.dimensions, dim)
         self.assertEqual(tree.size, num_nodes)
 
-        self.assertEqual(tree.root.point, points[1])
+        self.assertEqual(tree.root.point, points[2])
         self.assertEqual(tree.root.axis, 0)
-        self.assertEqual(tree.root.left.point, points[0])
+        self.assertEqual(tree.root.left.point, points[1])
         self.assertEqual(tree.root.left.axis, 1)
-        self.assertEqual(tree.root.right.point, points[2])
+        self.assertEqual(tree.root.right.point, points[4])
         self.assertEqual(tree.root.right.axis, 1)
+        self.assertEqual(tree.root.left.left.point, points[0])
+        self.assertEqual(tree.root.left.left.axis, 2)
+        self.assertEqual(tree.root.right.left.point, points[3])
+        self.assertEqual(tree.root.right.left.axis, 2)
     
     def test_build_tree_multiple_nodes(self):
         """
@@ -187,3 +201,70 @@ class KDTreeTest(unittest.TestCase):
         self.assertFalse(result)
 
         self.assertEqual(tree.size, num_nodes)
+        
+    @parameterized.expand([
+            [10, 2], [20, 3], [30, 4], [40, 5]
+    ])
+    def test_search_nearest_neighbors_fixed_point(self, num_nodes, dim):
+        """
+        Search the nearest neighbors from the given points
+        compare with scipy.spatial.KDTree
+        """
+        points = self.set_points(num_nodes, dim)
+        tree = _kdtree.KDTree(points, dim)
+
+        query = _point.Point(dim, [1] * dim)
+        result = tree.search_nearest_neighbors(query, 3)
+
+        scipy_points = []
+        for point in points:
+            scipy_points.append(point.coords)
+
+        scipy_tree = KDTree(scipy_points)
+        _, scipy_index = scipy_tree.query([query.coords], 3)
+
+        self.assertEqual(len(result), len(scipy_index[0]))
+
+        scipy_result = []
+        for index in scipy_index[0]:
+            scipy_result.append(points[index])
+
+        result = sorted(result, key=lambda x: x.coords)
+        scipy_result = sorted(scipy_result, key=lambda x: x.coords)
+
+        for i in range(len(result)):
+            self.assertEqual(result[i], scipy_result[i])
+
+    @parameterized.expand([
+            [10, 2, 3], [20, 3, 4], [30, 4, 5], [40, 5, 6]
+    ])
+    def test_search_nearest_neighbors_random_point(self, num_nodes, dim, k):
+        """
+        Search the nearest neighbors from the random points
+        compare with scipy.spatial.KDTree
+        """
+        for round in range(1000):
+            points = self.set_random_points(num_nodes, dim)
+            tree = _kdtree.KDTree(points, dim)
+
+            query = _point.Point(dim, [random.random() for _ in range(dim)])
+            result = tree.search_nearest_neighbors(query, k)
+
+            scipy_points = []
+            for point in points:
+                scipy_points.append(point.coords)
+
+            scipy_tree = KDTree(scipy_points)
+            _, scipy_index = scipy_tree.query([query.coords], k)
+
+            self.assertEqual(len(result), len(scipy_index[0]))
+
+            scipy_result = []
+            for index in scipy_index[0]:
+                scipy_result.append(points[index])
+
+            result = sorted(result, key=lambda x: x.coords)
+            scipy_result = sorted(scipy_result, key=lambda x: x.coords)
+
+            for i in range(len(result)):
+                self.assertEqual(result[i], scipy_result[i])
