@@ -4,16 +4,14 @@
 
 struct PairComparator{
     bool operator()(const std::pair<double, Point> &p1, const std::pair<double, Point> &p2){
-        return p1.first > p2.first;
+        return p1.first < p2.first;
     }
 };
 
 class BoundedPriorityQueue{
     private:
-        std::vector<std::pair<double, Point>> items;
-        std::priority_queue<std::pair<double, Point>, std::vector<std::pair<double, Point>>, PairComparator> pq;
+        std::vector<std::pair<double, Point>> pq;
         size_t capacity = 0;
-        size_t size = 0;
 
     public:
         /*
@@ -28,20 +26,24 @@ class BoundedPriorityQueue{
          * Getter
          */
 
-        size_t get_size(){
-            return size;
-        }
-
         size_t get_capacity(){
             return capacity;
         }
 
-        std::vector<std::pair<double, Point>> get_items(){
-            return items;
+        size_t get_size(){
+            return pq.size();
         }
 
         double max_priority(){
-            return pq.top().first;
+            return pq.front().first;
+        }
+
+        std::vector<Point> get_points(){
+            std::vector<Point> points;
+            for(auto const &pair : pq){
+                points.push_back(pair.second);
+            }
+            return points;
         }
 
         /*
@@ -49,15 +51,16 @@ class BoundedPriorityQueue{
          */
 
         void push(double distance, Point const &point){
-            if(size < capacity){
-                items.push_back(std::make_pair(distance, point));
-                pq.push(std::make_pair(distance, point));
-                size++;
+            if(pq.size() < capacity){
+                pq.push_back(std::make_pair(distance, point));
+                std::push_heap(pq.begin(), pq.end(), PairComparator());
             }
             else{
-                if(distance < pq.top().first){
-                    pq.pop();
-                    pq.push(std::make_pair(distance, point));
+                if(distance < pq.front().first){
+                    std::pop_heap(pq.begin(), pq.end(), PairComparator());
+                    pq.pop_back();
+                    pq.push_back(std::make_pair(distance, point));
+                    std::push_heap(pq.begin(), pq.end(), PairComparator());
                 }
             }
         }
