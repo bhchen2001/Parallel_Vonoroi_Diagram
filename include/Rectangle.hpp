@@ -99,6 +99,18 @@ class Rectangle{
          * Rect Operations
          */
 
+        Rectangle left_half(size_t axis, double split) const{
+            Point new_max_corner = max_corner;
+            new_max_corner[axis] = split;
+            return Rectangle(min_corner, new_max_corner);
+        }
+
+        Rectangle right_half(size_t axis, double split) const{
+            Point new_min_corner = min_corner;
+            new_min_corner[axis] = split;
+            return Rectangle(new_min_corner, max_corner);
+        }
+
         bool contains(Point const &point) const{
             for(size_t i = 0; i < point.get_dim(); i++){
                 if(point[i] < min_corner[i] || point[i] > max_corner[i]){
@@ -108,3 +120,13 @@ class Rectangle{
             return true;
         }
 };
+
+bool intersects(Rectangle const &rect1, Rectangle const &rect2){
+    for(size_t i = 0; i < rect1.get_dim(); i++){
+        if(rect1.get_min_corner()[i] > rect2.get_max_corner()[i] || \
+           rect1.get_max_corner()[i] < rect2.get_min_corner()[i]){
+            return false;
+        }
+    }
+    return true;
+}

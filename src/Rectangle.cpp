@@ -21,4 +21,6 @@ PYBIND11_MODULE(_rectangle, m) {
         .def_property_readonly("min_corner", &Rectangle::get_min_corner)
         .def_property_readonly("max_corner", &Rectangle::get_max_corner)
         .def("contains", &Rectangle::contains);
+
+    m.def("intersect", &intersect);
 }
