@@ -1,0 +1,477 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% LaTeX Template
+% Version 2.0 (March 8, 2022)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Author:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+	12pt, % Set the default font size, options include: 8pt, 9pt, 10pt, 11pt, 12pt, 14pt, 17pt, 20pt
+	%t, % Uncomment to vertically align all slide content to the top of the slide, rather than the default centered
+	aspectratio=169, % Uncomment to set the aspect ratio to a 16:9 ratio which matches the aspect ratio of 1080p and 4K screens and projectors
+]{beamer}
+
+\graphicspath{{Images/}{./}} % Specifies where to look for included images (trailing slash required)
+
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule for better rules in tables
+
+%----------------------------------------------------------------------------------------
+%	SELECT LAYOUT THEME
+%----------------------------------------------------------------------------------------
+
+% Beamer comes with a number of default layout themes which change the colors and layouts of slides. Below is a list of all themes available, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+%----------------------------------------------------------------------------------------
+%	SELECT COLOR THEME
+%----------------------------------------------------------------------------------------
+
+% Beamer comes with a number of color themes that can be applied to any layout theme to change its colors. Uncomment each of these in turn to see how they change the colors of your selected layout theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{monarca}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{spruce}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%----------------------------------------------------------------------------------------
+%	SELECT FONT THEME & FONTS
+%----------------------------------------------------------------------------------------
+
+% Beamer comes with several font themes to easily change the fonts used in various parts of the presentation. Review the comments beside each one to decide if you would like to use it. Note that additional options can be specified for several of these font themes, consult the beamer documentation for more information.
+
+\usefonttheme{default} % Typeset using the default sans serif font
+%\usefonttheme{serif} % Typeset using the default serif font (make sure a sans font isn't being set as the default font if you use this option!)
+%\usefonttheme{structurebold} % Typeset important structure text (titles, headlines, footlines, sidebar, etc) in bold
+%\usefonttheme{structureitalicserif} % Typeset important structure text (titles, headlines, footlines, sidebar, etc) in italic serif
+%\usefonttheme{structuresmallcapsserif} % Typeset important structure text (titles, headlines, footlines, sidebar, etc) in small caps serif
+
+%------------------------------------------------
+
+%\usepackage{mathptmx} % Use the Times font for serif text
+\usepackage{palatino} % Use the Palatino font for serif text
+
+%\usepackage{helvet} % Use the Helvetica font for sans serif text
+\usepackage[default]{opensans} % Use the Open Sans font for sans serif text
+%\usepackage[default]{FiraSans} % Use the Fira Sans font for sans serif text
+%\usepackage[default]{lato} % Use the Lato font for sans serif text
+\usepackage{filecontents} % used for reference
+\usepackage[style=numeric, sorting=none, backend=biber]{biblatex} % used for reference
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE
+%----------------------------------------------------------------------------------------
+
+\addbibresource{myreference.bib}
+
+%----------------------------------------------------------------------------------------
+%	SELECT INNER THEME
+%----------------------------------------------------------------------------------------
+
+% Inner themes change the styling of internal slide elements, for example: bullet points, blocks, bibliography entries, title pages, theorems, etc. Uncomment each theme in turn to see what changes it makes to your presentation.
+
+%\useinnertheme{default}
+\useinnertheme{circles}
+%\useinnertheme{rectangles}
+%\useinnertheme{rounded}
+%\useinnertheme{inmargin}
+
+%----------------------------------------------------------------------------------------
+%	SELECT OUTER THEME
+%----------------------------------------------------------------------------------------
+
+% Outer themes change the overall layout of slides, such as: header and footer lines, sidebars and slide titles. Uncomment each theme in turn to see what changes it makes to your presentation.
+
+%\useoutertheme{default}
+%\useoutertheme{infolines}
+%\useoutertheme{miniframes}
+%\useoutertheme{smoothbars}
+%\useoutertheme{sidebar}
+%\useoutertheme{split}
+%\useoutertheme{shadow}
+%\useoutertheme{tree}
+%\useoutertheme{smoothtree}
+
+%\setbeamertemplate{footline} % Uncomment this line to remove the footer line in all slides
+%\setbeamertemplate{footline}[page number] % Uncomment this line to replace the footer line in all slides with a simple slide count
+
+\setbeamertemplate{navigation symbols}{} % Uncomment this line to remove the navigation symbols from the bottom of all slides
+\setbeamertemplate{caption}[numbered] % numbering the figure in preentation
+
+%----------------------------------------------------------------------------------------
+%	MACRO
+%----------------------------------------------------------------------------------------
+
+\newcommand\meetingdatecompact{NSD 2024 Spring}
+\newcommand\meetingdate{June 3, 2024}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title[\meetingdatecompact]{Searching Based on KD Tree \\ \meetingdatecompact} % The short title in the optional parameter appears at the bottom of every slide, the full title in the main parameter is only on the title page
+
+% \subtitle{Optional Subtitle} % Presentation subtitle, remove this command if a subtitle isn't required
+
+\author[Bo Han, Chen]{Bo Han, Chen} % Presenter name(s), the optional parameter can contain a shortened version to appear on the bottom of every slide, while the main parameter will appear on the title slide
+
+\institute[NYCU]{National Yang Ming Chiao Tung University, Taiwan \\ \smallskip \textit{bhchen312551074.cs12@nycu.edu.tw}} % Your institution, the optional parameter can be used for the institution shorthand and will appear on the bottom of every slide after author names, while the required parameter is used on the title slide and can include your email address or additional information on separate lines
+
+\date[\meetingdate]{\meetingdate} % Presentation date or conference/meeting name, the optional parameter can contain a shortened version to appear on the bottom of every slide, while the required parameter value is output to the title slide
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SLIDE
+%----------------------------------------------------------------------------------------
+
+\begin{frame}
+	\titlepage % Output the title slide, automatically created using the text entered in the PRESENTATION INFORMATION block above
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS SLIDE
+%----------------------------------------------------------------------------------------
+
+% The table of contents outputs the sections and subsections that appear in your presentation, specified with the standard \section and \subsection commands. You may either display all sections and subsections on one slide with \tableofcontents, or display each section at a time on subsequent slides with \tableofcontents[pausesections]. The latter is useful if you want to step through each section and mention what you will discuss.
+
+\begin{frame}
+	\frametitle{Presentation Overview} % Slide title, remove this command for no title
+	
+	\tableofcontents % Output the table of contents (all sections on one slide)
+	%\tableofcontents[pausesections] % Output the table of contents (break sections up across separate slides)
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION BODY SLIDES
+%----------------------------------------------------------------------------------------
+
+\section{Topic Overview}
+
+\begin{frame}
+	\frametitle{Topic Overview}
+
+	\begin{itemize}
+		\item Binary tree data structure
+		\item Used for organizing points with partitioning
+		\item Performing searches in multidimensional space
+	\end{itemize}
+\end{frame}
+
+% Hello, everyone. Today, I am going to present the topic of Searching Based on KD Tree. 
+% KD Tree is a binary tree data structure that is used for organizing points in a k-dimensional space,
+% and it's often used for performing searches in multidimensional space.
+% KD Tree is used in many applications, such as data mining, machine learning, and computer graphics,
+% which is why it's so important and why I chose this topic for my presentation.
+
+%------------------------------------------------
+
+\section{Development}
+\subsection{System Architecture}
+
+\begin{frame}
+	\frametitle{Development}
+	\framesubtitle{System Architecture}
+
+	\begin{itemize}
+		\item C++: KD Tree implementation
+		\item Python: User interface
+		\item Makefile: Build system \& test
+		\item Git: Version control
+		\item Github Actions: Continuous integration
+	\end{itemize}
+\end{frame}
+
+% In terms of development, I have used a combination of different tools to build the project.
+% The core implementation of the KD Tree data structure is written in C++,
+% while the user interface is implemented in Python with pybind11 for interfacing with the C++ code.
+% I have also used a Makefile as the build system for compiling the code and run the tests.
+% For version control, I have used Git and Github for hosting the code repository and managing the project,
+% and Github Actions is setting up for continuous integration to run the tests automatically.
+
+\subsection{Development Environment}
+
+\begin{frame}
+	\frametitle{Development}
+	\framesubtitle{Development Environment}
+
+	\begin{itemize}
+		\item Operating System: Ubuntu 22.04.4 LTS
+		\item Compiler: GCC 10.5.0
+		\item Python: 3.11.7
+		\begin{itemize}
+			\item pybind11: 2.12.0
+			\item pytest: 8.2.1
+			\item scipy: 1.13.1
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+% The environment I have used is shown in the slide,
+% Python package scipy is used for testing the correctness of the searching result of my KD Tree implementation.
+
+\subsection{Development Process}
+
+\begin{frame}
+	\frametitle{Development}
+	\framesubtitle{Development Process}
+
+	\begin{itemize}
+		\item Design requirements and corresponding interfaces
+		\item Research related data structures and searching algorithms
+		\item Main development phase
+		\begin{itemize}
+			\item Implement data structure / searching algorithm
+			\item Design test cases
+			\item Fix bugs and refactor code
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+% The development process is divided into several phases.
+% The first two phases are about designing the requirements and researching related data structures and searching algorithms,
+% which are done when finishing the proposal.
+% The main development phase is about implementing and testing,
+% I have implemented the components or algorithms based on designed requirements and researches,
+% then I will design test cases to verify the correctness of the implementation,
+% and fix bugs or refactor the code if necessary.
+
+%------------------------------------------------
+
+\section{Implementation}
+
+\subsection{KD Tree Data Structure}
+
+\begin{frame}
+	\frametitle{Implementation}
+	\framesubtitle{KD Tree Data Structure}
+
+	\begin{itemize}
+		\item Point
+		\begin{itemize}
+			\item Coordinate
+			\item Dimension
+		\end{itemize}
+		\item Node
+		\begin{itemize}
+			\item Point
+			\item Axis
+			\item Left / Right child
+			\item Region
+		\end{itemize}
+		\item KD Tree
+		\begin{itemize}
+			\item Root node
+			\item Insertion / Deletion
+			\item nearest neighbor search
+			\item range search
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+% The KD Tree data structure consists of three main components: Point, Node, and KD Tree.
+% The Point class represents a data point in k-dimensional space, which contains the coordinates and the dimension of this point.
+% The Node class contains the information including point, axis that is used for partitioning, left and right child nodes, and the region that this node represents,
+% which is used for range search.
+% In most of the implementations, the point information of the node is stored as an index or a reference to the original data point,
+% but with the consideration of functionality of insertion and deletion, the number of points in the KD Tree may change,
+% so I have decided to store the point information directly in the node.
+% Fianlly, the KD Tree class contains the root node of the tree and provides the interfaces for insertion, deletion, nearest neighbor search, and range search.
+
+\subsection{Searching Algorithm}
+
+\begin{frame}
+	\frametitle{Implementation}
+	\framesubtitle{Searching Algorithm - Nearest Neighbor Search}
+
+	\begin{itemize}
+		\item Recursive search
+		\begin{itemize}
+			\item Traverse the tree to find the k nearest neighbors
+		\end{itemize}
+		\item Bounded Priority queue
+		\begin{itemize}
+			\item Data structure for comparing the distance between the target point and the current nearest neighbor
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+% The nearest neighbor search algorithm is implemented as a recursive search function,
+% which traverses the tree to find the k nearest neighbors of the target point.
+% The algorithm uses a bounded priority queue as a data structure for comparing the distance between the target point and the farthest nearest neighbor,
+% and it will update the nearest neighbors if a closer point is found during the traversal.
+
+\begin{frame}
+	\frametitle{Implementation}
+	\framesubtitle{Searching Algorithm - Range Search}
+
+	\begin{itemize}
+		\item Recursive search
+		\begin{itemize}
+			\item Traverse the tree to find the points within the given range
+		\end{itemize}
+		\item Query Range (Rectangle)
+		\begin{itemize}
+			\item Define the query range of each axis
+			\item Data structure for checking if the region of the node intersects with the given range
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+% The range search algorithm is also implemented as a recursive search function,
+% which traverses the tree to find the points within the given range.
+% I have mentioned that for each node, it contains the information of the region that it represents,
+% so it can be used to determine if the region of the node intersects with the given range,
+% if it does, then the algorithm will continue to search the left and right child nodes,
+% otherwise, it will skip the child nodes and return.
+% The query range is defined as a range for each axis, since it is originally designed for 2d space,
+% so I call it rectangle in the implementation.
+
+\subsection{User Interface}
+
+\begin{frame}
+	\frametitle{Implementation}
+	\framesubtitle{User Interface}
+
+	\begin{itemize}
+		\item Build the system with Makefile
+		\item Python interface
+		\item Perform searching with KD Tree
+	\end{itemize}
+\end{frame}
+
+% The user of this KD Tree implementation can build the system and use it through the Python interface.
+% For each function, I have designed corresponding interfaces for users,
+% such as building initial KD Tree with a list of points and performing searching with required information.
+
+\subsection{Tests \& Verification}
+
+\begin{frame}
+	\frametitle{Implementation}
+	\framesubtitle{Tests \& Verification}
+
+	\begin{itemize}
+		\item Test each data structure's operation
+		\item Test the correctness of the searching algorithm
+		\begin{itemize}
+			\item With scipy KD Tree
+		\end{itemize}
+		\item Github Actions for automatic testing
+	\end{itemize}
+\end{frame}
+
+% To verify the correctness of the implementation, I have designed test cases for each data structure's operation,
+% such as intersection checking between regions, and the result of tree update after insertion or deletion.
+% I have also tested the correctness of the searching algorithm by comparing the result with the scipy KD Tree implementation,
+% which is a widely used library for KD Tree in Python.
+% The test cases are designed with human-made data points and random generated data points to cover different scenarios.
+% Additionally, I have set up Github Actions for automatic testing in the early stage of the development,
+% which reduces the time cost for ensuring the current implementation is correct or not.
+
+%------------------------------------------------
+
+\section{Discussion \& Conclusion}
+
+\begin{frame}
+	\frametitle{Discussion \& Conclusion}
+
+	\begin{itemize}
+		\item Improving performance and scalability of the implementation
+		\item Extending the functionality of the KD Tree
+		\item Applying the KD Tree to next project
+	\end{itemize}
+\end{frame}
+
+% In conclusion, I have implemented the KD Tree data structure and searching algorithms based on the requirements and researches,
+% and verified the correctness of the implementation with test cases.
+% For future work, I will focus on improving the performance and scalability of the implementation,
+% such as allowing KD Tree being built with common data structures like list or numpy array instead of the custom Point class,
+% and extending the functionality of the KD Tree to support more operations like radius search.
+% I also want to apply the KD Tree to my previous project, which is image stitching, to see how it can help to improve the performance of the algorithm.
+
+% This concludes my presentation, thank you for listening, and I am happy to take any questions.
+
+%------------------------------------------------
+
+% \section{References}
+
+% \begin{frame}
+% 	\frametitle{References}
+
+% 	\printbibliography
+% \end{frame}
+
+%----------------------------------------------------------------------------------------
+%	CLOSING SLIDE
+%----------------------------------------------------------------------------------------
+
+\section{Q \& A}
+
+\begin{frame}
+    \frametitle{Q \& A}
+	\begin{center}
+		{\Huge Thanks for Listening}
+		
+		\bigskip\bigskip % Vertical whitespace
+		
+		{\LARGE Q \& A}
+
+		% \bigskip\bigskip
+		% Contact Me: b083040012@g-mail.nsysu.edu.tw
+	\end{center}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+
+\end{document} 
