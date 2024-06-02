@@ -164,12 +164,42 @@ void KDTree::search_nearest_neighbors_recursive(Point query_point, std::shared_p
     }
 }
 
+std::vector<Point> KDTree::range_search(Rectangle &range){
+    std::vector<Point> points;
+    range_search_recursive(range, root, points);
+    return points;
+}
+
+void KDTree::range_search_recursive(Rectangle &range, std::shared_ptr<KDNode> current, std::vector<Point> &points){
+    if(current == nullptr){
+        return;
+    }
+
+    if(current->is_leaf()){
+        if(range.contains(current->get_point())){
+            points.push_back(current->get_point());
+        }
+        return;
+    }
+    else{
+        if(range.contains(current->get_point())){
+            points.push_back(current->get_point());
+        }
+        if(intersects(range, current->get_region())){
+            range_search_recursive(range, current->get_left(), points);
+            range_search_recursive(range, current->get_right(), points);
+        }
+        return;
+    }
+}
+
 PYBIND11_MODULE(_kdtree, m) {
     pybind11::class_<KDTree>(m, "KDTree")
         .def(pybind11::init<std::vector<Point> &, size_t>())
         .def("insert_node", &KDTree::insert_node)
         .def("delete_node", &KDTree::delete_node)
         .def("search_nearest_neighbors", &KDTree::search_nearest_neighbors)
+        .def("range_search", &KDTree::range_search)
         .def_property_readonly("size", &KDTree::get_size)
         .def_property_readonly("root", &KDTree::get_root)
         .def_property_readonly("dimensions", &KDTree::get_dimensions)
