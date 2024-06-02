@@ -1,6 +1,8 @@
 # pragma once
 
 #include "BoundedPriorityQueue.hpp"
+#include "Rectangle.hpp"
+#include "Point.hpp"
 #include "KDNode.hpp"
 
 #include <vector>
@@ -9,7 +11,8 @@
 class KDTree{
     private:
         std::shared_ptr<KDNode> root = nullptr;
-        std::shared_ptr<KDNode> build_kd_tree(std::vector<Point> &points, size_t depth);
+        Rectangle get_initial_region(size_t dim);
+        std::shared_ptr<KDNode> build_kd_tree(std::vector<Point> &points, size_t depth, const Rectangle &region);
         size_t dimensions = -1;
 
     public:
@@ -19,7 +22,8 @@ class KDTree{
         
         KDTree(std::vector<Point> &points, size_t dimensions){
             this->dimensions = dimensions;
-            this->root = build_kd_tree(points, 0);
+            Rectangle initial_region = get_initial_region(dimensions);
+            this->root = build_kd_tree(points, 0, initial_region);
         }
 
         /*
@@ -72,4 +76,7 @@ class KDTree{
 
         std::vector<Point> search_nearest_neighbors(Point point, size_t k);
         void search_nearest_neighbors_recursive(Point point, std::shared_ptr<KDNode> current, BoundedPriorityQueue &bpq, size_t k);
+
+        std::vector<Point> range_search(Rectangle &range);
+        void range_search_recursive(Rectangle &range, std::shared_ptr<KDNode> current, std::vector<Point> &points);
 };

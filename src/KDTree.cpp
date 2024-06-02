@@ -4,7 +4,15 @@
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 
-std::shared_ptr<KDNode> KDTree::build_kd_tree(std::vector<Point> &points, size_t depth){
+Rectangle KDTree::get_initial_region(size_t dim){
+
+    Point min_corner(dim, std::vector<double>(dim, 0));
+    Point max_corner(dim, std::vector<double>(dim, std::numeric_limits<double>::max()));
+
+    return Rectangle(min_corner, max_corner);
+}
+
+std::shared_ptr<KDNode> KDTree::build_kd_tree(std::vector<Point> &points, size_t depth, const Rectangle &region){
     if(points.size() == 0){
         return nullptr;
     }
@@ -16,11 +24,17 @@ std::shared_ptr<KDNode> KDTree::build_kd_tree(std::vector<Point> &points, size_t
         return a[axis] < b[axis];
     });
 
-    std::shared_ptr<KDNode> node = std::make_shared<KDNode>(points[median], axis);
+    Point median_point = points[median];
+    std::shared_ptr<KDNode> node = std::make_shared<KDNode>(median_point, axis, region);
+
     std::vector<Point> left_points(points.begin(), points.begin() + median);
+    Rectangle left_region = region.left_half(axis, median_point[axis]);
+
     std::vector<Point> right_points(points.begin() + median + 1, points.end());
-    node->set_left(build_kd_tree(left_points, depth + 1));
-    node->set_right(build_kd_tree(right_points, depth + 1));
+    Rectangle right_region = region.right_half(axis, median_point[axis]);
+
+    node->set_left(build_kd_tree(left_points, depth + 1, left_region));
+    node->set_right(build_kd_tree(right_points, depth + 1, right_region));
 
     return node;
 }
@@ -33,12 +47,13 @@ void KDTree::insert_node(Point point){
         size_t axis = depth % dimensions;
 
         if(current == nullptr){
-            root = std::make_shared<KDNode>(point, axis);
+            root = std::make_shared<KDNode>(point, axis, get_initial_region(dimensions));
             break;
         }
         if(point[axis] < current->get_point()[axis]){
             if(current->get_left() == nullptr){
-                current->set_left(std::make_shared<KDNode>(point, (axis + 1) % dimensions));
+                Rectangle region = current->get_region().left_half(axis, current->get_point()[axis]);
+                current->set_left(std::make_shared<KDNode>(point, (axis + 1) % dimensions), region);
                 break;
             }
             else{
@@ -47,7 +62,8 @@ void KDTree::insert_node(Point point){
         }
         else{
             if(current->get_right() == nullptr){
-                current->set_right(std::make_shared<KDNode>(point, (axis + 1) % dimensions));
+                Rectangle region = current->get_region().right_half(axis, current->get_point()[axis]);
+                current->set_right(std::make_shared<KDNode>(point, (axis + 1) % dimensions), region);
                 break;
             }
             else{
@@ -148,12 +164,42 @@ void KDTree::search_nearest_neighbors_recursive(Point query_point, std::shared_p
     }
 }
 
+std::vector<Point> KDTree::range_search(Rectangle &range){
+    std::vector<Point> points;
+    range_search_recursive(range, root, points);
+    return points;
+}
+
+void KDTree::range_search_recursive(Rectangle &range, std::shared_ptr<KDNode> current, std::vector<Point> &points){
+    if(current == nullptr){
+        return;
+    }
+
+    if(current->is_leaf()){
+        if(range.contains(current->get_point())){
+            points.push_back(current->get_point());
+        }
+        return;
+    }
+    else{
+        if(range.contains(current->get_point())){
+            points.push_back(current->get_point());
+        }
+        if(intersects(range, current->get_region())){
+            range_search_recursive(range, current->get_left(), points);
+            range_search_recursive(range, current->get_right(), points);
+        }
+        return;
+    }
+}
+
 PYBIND11_MODULE(_kdtree, m) {
     pybind11::class_<KDTree>(m, "KDTree")
         .def(pybind11::init<std::vector<Point> &, size_t>())
         .def("insert_node", &KDTree::insert_node)
         .def("delete_node", &KDTree::delete_node)
         .def("search_nearest_neighbors", &KDTree::search_nearest_neighbors)
+        .def("range_search", &KDTree::range_search)
         .def_property_readonly("size", &KDTree::get_size)
         .def_property_readonly("root", &KDTree::get_root)
         .def_property_readonly("dimensions", &KDTree::get_dimensions)

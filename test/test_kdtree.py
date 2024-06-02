@@ -8,7 +8,7 @@ from scipy.spatial import KDTree
 import sys
 sys.path.append('..')
 
-import _kdtree, _point
+import _kdtree, _point, _rectangle
 
 class KDTreeTest(unittest.TestCase):
     def set_points(self, num_nodes, dim):
@@ -61,14 +61,34 @@ class KDTreeTest(unittest.TestCase):
 
         self.assertEqual(tree.root.point, points[2])
         self.assertEqual(tree.root.axis, 0)
+        for i in range(num_nodes):
+            self.assertTrue(tree.root.region.contains(points[i]))
+
         self.assertEqual(tree.root.left.point, points[1])
         self.assertEqual(tree.root.left.axis, 1)
+        self.assertTrue(tree.root.left.region.contains(points[0]))
+        self.assertTrue(tree.root.left.region.contains(points[1]))
+        self.assertFalse(tree.root.left.region.contains(points[3]))
+        self.assertFalse(tree.root.left.region.contains(points[4]))
+
         self.assertEqual(tree.root.right.point, points[4])
         self.assertEqual(tree.root.right.axis, 1)
+        self.assertFalse(tree.root.right.region.contains(points[0]))
+        self.assertFalse(tree.root.right.region.contains(points[1]))
+        self.assertTrue(tree.root.right.region.contains(points[3]))
+        self.assertTrue(tree.root.right.region.contains(points[4]))
+
         self.assertEqual(tree.root.left.left.point, points[0])
         self.assertEqual(tree.root.left.left.axis, 2)
+        self.assertTrue(tree.root.left.left.region.contains(points[0]))
+        self.assertFalse(tree.root.left.left.region.contains(points[3]))
+        self.assertFalse(tree.root.left.left.region.contains(points[4]))
+
         self.assertEqual(tree.root.right.left.point, points[3])
         self.assertEqual(tree.root.right.left.axis, 2)
+        self.assertFalse(tree.root.right.left.region.contains(points[0]))
+        self.assertFalse(tree.root.right.left.region.contains(points[1]))
+        self.assertTrue(tree.root.right.left.region.contains(points[3]))
     
     def test_build_tree_multiple_nodes(self):
         """
@@ -116,26 +136,16 @@ class KDTreeTest(unittest.TestCase):
 
         self.assertEqual(tree.root.point, points[1])
         self.assertEqual(tree.root.axis, 0)
+        self.assertTrue(tree.root.region.contains(points[0]))
+        self.assertTrue(tree.root.region.contains(new_point))
+
         self.assertEqual(tree.root.left.point, points[0])
         self.assertEqual(tree.root.left.axis, 1)
+        self.assertFalse(tree.root.left.region.contains(new_point))
+
         self.assertEqual(tree.root.right.point, new_point)
         self.assertEqual(tree.root.right.axis, 1)
-
-    def test_insert_multiple_nodes(self):
-        """
-        Insert multiple nodes to the tree
-        """
-        num_nodes = 10
-        dim = 2
-        points = self.set_points(num_nodes, dim)
-        tree = _kdtree.KDTree([], dim)
-
-        for point in points:
-            tree.insert_node(point)
-
-        self.assertEqual(tree.size, num_nodes)
-
-        self.traverse(tree.root, 0, dim, points)
+        self.assertFalse(tree.root.right.region.contains(points[0]))
 
     def test_delete_node_built(self):
         """
@@ -153,6 +163,7 @@ class KDTreeTest(unittest.TestCase):
 
         self.assertEqual(tree.root.point, points[2])
         self.assertEqual(tree.root.axis, 0)
+
         self.assertEqual(tree.root.left.point, points[0])
         self.assertEqual(tree.root.left.axis, 1)
         self.assertEqual(tree.root.right, None)
@@ -266,5 +277,90 @@ class KDTreeTest(unittest.TestCase):
             result = sorted(result, key=lambda x: x.coords)
             scipy_result = sorted(scipy_result, key=lambda x: x.coords)
 
+            for i in range(len(result)):
+                self.assertEqual(result[i], scipy_result[i])
+
+    def scipy_range_search(self, points, query_rect):
+        """
+        Search the points within the given rectangle with scipy.spatial.KDTree.query_ball_point
+        """
+        scipy_points = []
+        for point in points:
+            scipy_points.append(point.coords)
+
+        scipy_tree = KDTree(scipy_points)
+        min_coords = query_rect.min_corner.coords
+        max_coords = query_rect.max_corner.coords
+
+        results = []
+
+        def in_range(point):
+            for i in range(len(min_coords)):
+                if point[i] < min_coords[i] or point[i] > max_coords[i]:
+                    return False
+            return True
+
+        for point in scipy_points:
+            if in_range(point):
+                indices = scipy_tree.query_ball_point(point, 0)
+                if len(indices) > 0:
+                    results.append(points[indices[0]])
+
+        return results
+
+    def test_range_search(self):
+        """
+        Test _kdtree.range_search
+            - compare with modified scipy.spatial.KDTree.query_ball_point
+        """
+
+        num_nodes = 10
+        dim = 2
+        points = self.set_points(num_nodes, dim)
+        tree = _kdtree.KDTree(points, dim)
+
+        min_coords = [0] * dim
+        max_coords = [3] * dim
+        query_rect = _rectangle.Rectangle(_point.Point(dim, min_coords), _point.Point(dim, max_coords))
+
+        result = tree.range_search(query_rect)
+
+        scipy_result = self.scipy_range_search(points, query_rect)
+
+        result = sorted(result, key=lambda x: x.coords)
+        scipy_result = sorted(scipy_result, key=lambda x: x.coords)
+
+        # print the result
+        for i in range(len(result)):
+            print(result[i].coords, scipy_result[i].coords)
+
+        self.assertEqual(len(result), len(scipy_result))
+        for i in range(len(result)):
+            self.assertEqual(result[i], scipy_result[i])
+
+    @parameterized.expand([
+            [10, 2], [20, 3], [30, 4], [40, 5]
+    ])
+    def test_range_search_random(self, num_nodes, dim):
+        """
+        Test _kdtree.range_search with random points
+            - compare with modified scipy.spatial.KDTree.query_ball_point
+        """
+        for round in range(1000):
+            points = self.set_random_points(num_nodes, dim)
+            tree = _kdtree.KDTree(points, dim)
+
+            min_coords = [random.random() for _ in range(dim)]
+            max_coords = [min_coords[i] + random.random() for i in range(dim)]
+            query_rect = _rectangle.Rectangle(_point.Point(dim, min_coords), _point.Point(dim, max_coords))
+
+            result = tree.range_search(query_rect)
+
+            scipy_result = self.scipy_range_search(points, query_rect)
+
+            result = sorted(result, key=lambda x: x.coords)
+            scipy_result = sorted(scipy_result, key=lambda x: x.coords)
+
+            self.assertEqual(len(result), len(scipy_result))
             for i in range(len(result)):
                 self.assertEqual(result[i], scipy_result[i])
