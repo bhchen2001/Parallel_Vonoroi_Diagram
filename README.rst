@@ -2,6 +2,15 @@
  Searching-based-on-KD-Tree
 ===========================
 
+Feed Back From Presentation 0603
+================================
+
+1. The recursion implementation of KNN and Range Search hinder the extensibility of the code (such as parallel programming), It is better to implement the iterative version of the algorithm.
+2. Improve the hard coding of the data type in the code.
+3. The API and the usage of the code should be more user-friendly.
+4. Update usage in the README file and add some demo code.
+5. Add more tests!
+
 Basic Information
 =================
 
